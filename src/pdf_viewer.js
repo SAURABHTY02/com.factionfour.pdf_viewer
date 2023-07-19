@@ -1,34 +1,50 @@
-const pdfjsLib = require('./pdf');
-//  const PDFJSWorker = require('pdfjs-dist/build/pdf.worker.js')
- pdfjsLib.GlobalWorkerOptions.workerSrc = './worker.js';
- // 'pdfjs-dist/build/pdf.worker.js';
+const PDFJS = require('pdfjs-dist');
+var PDF_DOC, HTMLElement;
 
 
+const view_pdf = async (data, successCallback, errorCallback) => {
+  try {
+    const uri = URL.createObjectURL(data.file);
+    var _PDF_DOC = await PDFJS.getDocument({ url: uri });
+    const canvas = data.canvasRef.current
+    HTMLElement = canvas;
+    var page = await _PDF_DOC.getPage(1);
+    PDF_DOC = _PDF_DOC;
+    var viewport = page.getViewport({ scale: 1 });
+    canvas.height = viewport.height;
+    canvas.width = viewport.width;
+    var render_context = {
+      canvasContext: canvas.getContext("2d"),
+      viewport: viewport
+    };
+    await page.render(render_context).promise;
 
-const view_pdf = async (htmlElement, file) => {
-  console.log(htmlElement, "node modules", file)
-
-  const buffer = await file.arrayBuffer();
-  let byteArray = new Int8Array(buffer);
-  console.log("after node modules", byteArray)
-  //const pdfData = await fetch(url).then(response => response.arrayBuffer());
-  const pdf = await pdfjsLib.getDocument(byteArray).promise;
-  const page = await pdf.getPage(1);
-
-  const canvas = htmlElement.current;
-  const context = canvas.getContext('2d');
-  const viewport = page.getViewport({ scale: 1 });
-
-  canvas.height = viewport.height;
-  canvas.width = viewport.width;
-
-  await page.render({
-    canvasContext: context,
-    viewport: viewport
-  });
-
+    if (successCallback) successCallback(_PDF_DOC);
+  } catch (error) {
+    if (errorCallback) errorCallback(error.message)
+  }
 };
 
+const pageChangeReRender = async (pageNumber, successCallback, errorCallback) => {
+  try {
+
+    var page = await PDF_DOC.getPage(pageNumber);
+    var viewport = page.getViewport({ scale: 1 });
+    HTMLElement.height = viewport.height;
+    HTMLElement.width = viewport.width;
+    var render_context = {
+      canvasContext: HTMLElement.getContext("2d"),
+      viewport: viewport
+    };
+    await page.render(render_context).promise;
+
+  } catch (err) {
+    if (errorCallback) errorCallback(err)
+  }
+
+}
+
 module.exports = {
-  view_pdf
+  view_pdf,
+  pageChangeReRender
 }

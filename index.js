@@ -1,5 +1,6 @@
-const { view_pdf } = require('./src/pdf_viewer');
+const { view_pdf, pageChangeReRender } = require('./src/pdf_viewer');
 
 module.exports = {
-    view_pdf
+    view_pdf,
+    pageChangeReRender
 };
