@@ -9,7 +9,18 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "peerDependencies": {
+    "webpack": "^3.0.0 || ^4.0.0-alpha.0 || ^4.0.0"
+  },
   "dependencies": {
-    "pdfjs-dist": "^2.3.200"
+    "node-ensure": "^0.0.0",
+    "worker-loader": "^2.0.0"
+  },
+  "browser": {
+    "fs": false,
+    "http": false,
+    "https": false,
+    "node-ensure": false,
+    "zlib": false
   }
 }

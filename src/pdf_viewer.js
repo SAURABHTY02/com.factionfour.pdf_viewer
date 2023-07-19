@@ -1,4 +1,4 @@
-const PDFJS = require('pdfjs-dist');
+const PDFJS = require('./build/pdf');
 var PDF_DOC, HTMLElement;
 
 
